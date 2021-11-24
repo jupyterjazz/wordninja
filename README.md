@@ -6,7 +6,7 @@ Fast and efficient way to split concatenated Georgian text.
 
 Main additions to the original version:
 * Created a Georgian language model.
-* Added functionality to change model's behaviour by enabling adding/removing of specific words, allowing to save and reuse modified models.
+* Added functionality to change model's behaviour by enabling addition/removal of specific words, allowing to save and reuse modified models.
 * Rewrote the code so that it's a bit cleaner and easier to understand. 
 
 
