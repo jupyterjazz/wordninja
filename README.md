@@ -1,67 +1,58 @@
-![image](https://user-images.githubusercontent.com/2049665/29219793-b4dcb942-7e7e-11e7-8785-761b0e784e04.png)
+## Overview
 
-Word Ninja
-==========
+Fast and efficient way to split concatenated Georgian text. 
 
-Slice your munged together words!  Seriously, Take anything, `'imateapot'` for example, would become `['im', 'a', 'teapot']`.  Useful for humanizing stuff (like database tables when people don't like underscores).
+[*For more details on how the algorithm works visit the [original repository](https://github.com/keredson/wordninja)*]
 
-This project is repackaging the excellent work from here: http://stackoverflow.com/a/11642687/2449774
+Main additions to the original version:
+* Created a Georgian language model.
+* Added functionality to change model's behaviour by enabling adding/removing specific words, allowing to save and reuse modified models.
+* Rewrote the code so that it's a bit cleaner and easier to understand. 
 
-Usage
------
+
+
+## Usage
+### Example
 ```
 $ python
->>> import wordninja
->>> wordninja.split('derekanderson')
-['derek', 'anderson']
->>> wordninja.split('imateapot')
-['im', 'a', 'teapot']
->>> wordninja.split('heshotwhointhewhatnow')
-['he', 'shot', 'who', 'in', 'the', 'what', 'now']
->>> wordninja.split('thequickbrownfoxjumpsoverthelazydog')
-['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']
+>>> from wordninja import Wordninja
+>>> lm = Wordninja()
+>>> lm.split('ვნებისსიმძაფრეშენებაშიადაარააშენებულითტკბობაში')
+['ვნების', 'სიმძაფრე', 'შენებაშია', 'და', 'არა', 'აშენებულით', 'ტკბობაში']
+>>> wordninja.split('ესმეუკვემივხვდიროაღარდამზოგავდა')
+['ეს', 'მე', 'უკვე', 'მივხვდი', 'რო', 'აღარ', 'დამზოგავდა']
 ```
 
-Performance
------------
-It's super fast!
-
+### Installation
 ```
->>> def f():
-...   wordninja.split('imateapot')
-... 
->>> timeit.timeit(f, number=10000)
-0.40885152100236155
+pip install git+https://github.com/jupyterjazz/wordninja
 ```
 
-It can handle long strings:
+### Modifying model's behaviour
+Case 1. we don't want to split a specific word
 ```
->>> wordninja.split('wethepeopleoftheunitedstatesinordertoformamoreperfectunionestablishjusticeinsuredomestictranquilityprovideforthecommondefencepromotethegeneralwelfareandsecuretheblessingsoflibertytoourselvesandourposteritydoordainandestablishthisconstitutionfortheunitedstatesofamerica')
-['we', 'the', 'people', 'of', 'the', 'united', 'states', 'in', 'order', 'to', 'form', 'a', 'more', 'perfect', 'union', 'establish', 'justice', 'in', 'sure', 'domestic', 'tranquility', 'provide', 'for', 'the', 'common', 'defence', 'promote', 'the', 'general', 'welfare', 'and', 'secure', 'the', 'blessings', 'of', 'liberty', 'to', 'ourselves', 'and', 'our', 'posterity', 'do', 'ordain', 'and', 'establish', 'this', 'constitution', 'for', 'the', 'united', 'states', 'of', 'america']
-```
-And scales well.  (This string takes ~7ms to compute.) 
-
-How to Install
---------------
-
-```
-pip3 install wordninja
+>>> lm.split('ემპედოკლე')
+['ემპედო', 'კლე'] # we want ['ემპედოკლე']
+>>> lm.add_word('ემპედოკლე')
+>>> lm.split('ემპედოკლე')
+['ემპედოკლე']
 ```
 
-Custom Language Models
-----------------------
-#1 most requested feature!  If you want to do something other than english (or want to specify your own model of english), this is how you do it.
-
+Case 2. we want to split a word in a certain way
 ```
->>> lm = wordninja.LanguageModel('my_lang.txt.gz')
->>> lm.split('derek')
-['der','ek']
+>>> lm.split('ჰერაკლე')
+['ჰერაკლე'] # we want ['ჰერა', 'კლე']
+>>> lm.remove_word('ჰერაკლე')
+>>> lm.add_word('ჰერა')
+>>> lm.add_word('კლე')
+>>> lm.split('ჰერაკლე')
+['ჰერა', 'კლე']
 ```
 
-Language files must be gziped text files with one word per line in decreasing order of probability.
-
-If you want to make your model the default, set:
-
+### Save and reuse models
+Don't forget to save the model after you've made some changes.
 ```
-wordninja.DEFAULT_LANGUAGE_MODEL = wordninja.LanguageModel('my_lang.txt.gz')
+>>> lm.save_model('model_name')
+>>> modified_lm = Wordninja('model_name')
 ```
+
