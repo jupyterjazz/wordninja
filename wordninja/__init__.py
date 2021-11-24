@@ -1,0 +1,1 @@
+from .wordninja import Wordninja
