@@ -1,6 +1,6 @@
 ## Overview
 
-Fast and efficient way to split concatenated Georgian text. 
+Fast and efficient way to split concatenated Georgian text based on unigram frequencies.
 
 [*For more details on how the algorithm works visit the [original repository](https://github.com/keredson/wordninja)*]
 
